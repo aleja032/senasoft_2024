@@ -16,6 +16,11 @@ a{
     color: white;
 }
 
+.options.active{
+    background-color: var(--green);
+    color: white;
+}
+
 main {
     height: 100vh; /* Full height of the viewport */
     overflow: hidden; /* Prevent scrolling on the main element itself */

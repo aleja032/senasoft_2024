@@ -4,7 +4,7 @@
     
         echo "hola";
         // Redirección a index.html
-        header('Location: .././index.html');
+        header('Location: .././index.php');
         exit(); // Asegúrate de que el script se detenga después de la redirección
     }
 ?>
@@ -21,7 +21,11 @@
     <!-- link css y icons bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
-    <link rel="stylesheet" href="../styles/UI.css">
+    <link rel="stylesheet" href="../styles/aprendiz.css">
+    <?php
+        require_once '../backend/config/db_connection.php';
+        include_once '../backend/class/Bike.php';
+    ?>
 </head>
 <body>
     <div class="container-fluid d-flex">
@@ -60,20 +64,39 @@
                     <h3 class="text-center mb-4">Alquilar Bicicletas</h3>
                     <div class="row row-gap-3">
                         <!-- Bike Card 1 -->
-                            <div class="col-md-4 col-sm-6 d-flex justify-content-center">
-                                <div class="card bike-card">
-                                    <img src="https://gwbicycles.com/cdn/shop/files/1-negra-2_1800x1800.jpg?v=1726761027" class="card-img-top img-fluid" alt="Bicicleta 700 Berlín GW">
-                                    <div class="card-body">
-                                        <h5 class="card-title">Bicicleta 700 Berlín GW</h5>
-                                        <p class="card-text">Estado: Buenas condiciones<br>Disponibilidad: Sí<br><strong>Precio Alquiler: $40.000</strong></p>
-                                        <div class="d-flex justify-content-between">
-                                            <a href="#" class="btn btn-outline-green">Ver detalles</a>
-                                            <a href="#" class="btn btn-green">Alquilar</a>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        
+                                <?php
+                                // Instantiate the Bike class
+                                    $bikeObj = new Bike($conn);
+
+                                    // Fetch the list of bikes using the getBikes() method
+                                    $bikes = $bikeObj->getBikes();
+
+                                    if($bikes) {
+                                        // Loop through each bike and generate the HTML for the card
+                                        foreach($bikes as $bike) {
+                                            echo '
+                                            <div class="col-md-4 col-sm-6 d-flex justify-content-center">
+                                                <div class="card bike-card">
+                                                    <img src="https://gwbicycles.com/cdn/shop/files/1-negra-2_1800x1800.jpg?v=1726761027" class="card-img-top img-fluid" alt="Bicicleta ' . htmlspecialchars($bike["brand"]) . '">
+                                                    <div class="card-body">
+                                                        <h5 class="card-title">' . htmlspecialchars($bike["brand"]) . ' - ' . htmlspecialchars($bike["color"]) . '</h5>
+                                                        <p class="card-text">
+                                                            Estado: ' . htmlspecialchars($bike["bike_condition"]) . '<br>
+                                                            Disponibilidad: ' . ($bike["availability"] == 1 ? "Sí" : "No") . '<br>
+                                                            <strong>Precio Alquiler: $' . number_format($bike["rent_price"], 0) . '</strong>
+                                                        </p>
+                                                        <div class="d-flex justify-content-between">
+                                                            <a href="#" class="btn btn-outline-green">Ver detalles</a>
+                                                            <a href="#" class="btn btn-green">Alquilar</a>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>';
+                                        }
+                                    } else {
+                                        echo '<p>No hay bicicletas disponibles.</p>';
+                                    }
+                                    ?>
                     </div>
                 </div>
                 
@@ -154,5 +177,6 @@
         </div>
     </div>
     <script src="../js/ajax.js"></script>
+    <script src="../javascript/aprendiz.js"></script>
 </body>
 </html>

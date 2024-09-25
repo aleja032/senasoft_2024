@@ -64,7 +64,7 @@ $(document).ready(function(){
         type: 'post',
         success: function(data){
             if(data){
-                window.location.href='../index.html';
+                window.location.href='../index.php';
             }
         }
     });
