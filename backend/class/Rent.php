@@ -21,20 +21,22 @@ class Rent{
         }
     }
 
+    //Metodo para sumar los precios en el mes
     public function SumarPreciosRentalsMesActual() {
         try {
             // Obtener el mes y año actual
             $mesActual = date('m');
             $anioActual = date('Y');
             
-            // Consulta preparada para sumar los precios del mes actual, excluyendo valores nulos o vacíos
-            $Sql = $this->Conexion->prepare(
-                "SELECT SUM(final_price) AS total
-                 FROM rentals
-                 WHERE final_price IS NOT NULL 
-                   AND final_price != ''
-                   AND MONTH(date_final) = ?
-                   AND YEAR(date_final) = ?"
+            $Sql = $this->db_connect->prepare(
+                "SELECT r.date_final, u.name, SUM(r.final_price) AS total
+                FROM rentals r
+                JOIN users u ON r.user_id = u.id
+                WHERE r.final_price IS NOT NULL 
+                AND r.final_price != ''
+                AND MONTH(r.date_final) = ?
+                AND YEAR(r.date_final) = ?
+                GROUP BY u.name"
             );
             
             // Vinculación de parámetros
@@ -45,14 +47,13 @@ class Rent{
         
             // Obtener los resultados
             $Resultado = $Sql->get_result();
-        
-            // Verificar si se obtuvo algún resultado
+
             if ($Resultado->num_rows > 0) {
-                // Obtener el total de la suma
-                $Resultado = $Resultado->fetch_assoc();
-                return $Resultado['total'];
+                // Obtener todos los resultados como un array asociativo
+                return $Resultado->fetch_all(MYSQLI_ASSOC);
             }
-            return 0; // Si no hay resultados, devolver 0
+            return [];
+
         } catch (PDOException $e) {
             echo "Error: " . $e->getMessage();
         }
@@ -60,7 +61,7 @@ class Rent{
 
     public function rentedBikeByUser($user_id) {
         try {
-            $query = $this->db_connect->prepare("SELECT * FROM rentals INNER JOIN bikes ON rentals.bike_id = bikes.id WHERE rentals.user_id = ? AND rentals.date_started IS NULL");
+            $query = $this->db_connect->prepare("SELECT * FROM rentals INNER JOIN bikes ON rentals.bike_id = bikes.id WHERE rentals.user_id = ? AND rentals.final IS NULL");
             $query->bind_param("ii", $user_id);
             $query->execute();
             $result = $query->get_result();
@@ -69,5 +70,19 @@ class Rent{
         } catch (PDOException $e) {
             echo "Error: " . $e->getMessage();
         }
+    }
+
+    public function discountByEconomicClass($economy){
+        // try {
+        //     $query = $this->db_connect->prepare("SELECT initial_price FROM rentals");
+        //     $query->execute();
+        //     $result = $query->get_result();
+        //     $economic = $result->fetch_all(MYSQLI_ASSOC);
+        //     return $economic; // No necesitas el close() aquí
+    
+        // } catch (Exception $e) {
+        //     echo "Error: " . $e->getMessage();
+        //     return []; // Retorna un arreglo vacío en caso de error
+        // }
     }
 }
