@@ -22,9 +22,12 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="../styles/aprendiz.css">
+     <!-- Leaflet CSS -->
+     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
     <?php
         require_once '../backend/config/db_connection.php';
         include_once '../backend/class/Bike.php';
+        include_once '../backend/class/Post.php';
     ?>
 </head>
 <body>
@@ -57,46 +60,14 @@
                 </div>
             </div>
         </div>
+
         <div class="w-75 d-flex">
             <main class="w-100 d-flex flex-column">
                 <div class="cont-main d-flex flex-column p-3" id="rent_bike">
 
                     <h3 class="text-center mb-4">Alquilar Bicicletas</h3>
-                    <div class="row row-gap-3">
-                        <!-- Bike Card 1 -->
-                                <?php
-                                // Instantiate the Bike class
-                                    $bikeObj = new Bike($conn);
-
-                                    // Fetch the list of bikes using the getBikes() method
-                                    $bikes = $bikeObj->getBikes();
-
-                                    if($bikes) {
-                                        // Loop through each bike and generate the HTML for the card
-                                        foreach($bikes as $bike) {
-                                            echo '
-                                            <div class="col-md-4 col-sm-6 d-flex justify-content-center">
-                                                <div class="card bike-card">
-                                                    <img src="https://gwbicycles.com/cdn/shop/files/1-negra-2_1800x1800.jpg?v=1726761027" class="card-img-top img-fluid" alt="Bicicleta ' . htmlspecialchars($bike["brand"]) . '">
-                                                    <div class="card-body">
-                                                        <h5 class="card-title">' . htmlspecialchars($bike["brand"]) . ' - ' . htmlspecialchars($bike["color"]) . '</h5>
-                                                        <p class="card-text">
-                                                            Estado: ' . htmlspecialchars($bike["bike_condition"]) . '<br>
-                                                            Disponibilidad: ' . ($bike["availability"] == 1 ? "Sí" : "No") . '<br>
-                                                            <strong>Precio Alquiler: $' . number_format($bike["rent_price"], 0) . '</strong>
-                                                        </p>
-                                                        <div class="d-flex justify-content-between">
-                                                            <a href="#" class="btn btn-outline-green">Ver detalles</a>
-                                                            <a href="#" class="btn btn-green">Alquilar</a>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>';
-                                        }
-                                    } else {
-                                        echo '<p>No hay bicicletas disponibles.</p>';
-                                    }
-                                    ?>
+                    <div class="row row-gap-3 alquilar-bikes">
+                      <?php include_once '../templates/modalrentals.php'; ?>
                     </div>
                 </div>
                 
@@ -137,38 +108,7 @@
                 <h3 class="text-center mb-4">Ver Eventos</h3>
                 <div class="row row-gap-3">
                     <!-- Event Card 1 -->
-                    <div class="col-md-4 col-sm-6 d-flex justify-content-center">
-                        <div class="card event-card">
-                            <div class="card-body">
-                                <h5 class="card-title">Evento Ciclovía Bogotá</h5>
-                                <p class="card-text">Únete a la ciclovía más grande de Bogotá y disfruta de un recorrido especial.</p>
-                                <p class="event-date">Fecha: 25 Septiembre 2024</p>
-                                <a href="#" class="btn btn-green">Ver detalles</a>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- Event Card 2 -->
-                    <div class="col-md-4 col-sm-6 d-flex justify-content-center">
-                        <div class="card event-card">
-                            <div class="card-body">
-                                <h5 class="card-title">Reto en Montaña</h5>
-                                <p class="card-text">Participa en el reto de ciclismo en montaña y demuestra tu resistencia.</p>
-                                <p class="event-date">Fecha: 12 Octubre 2024</p>
-                                <a href="#" class="btn btn-green">Ver detalles</a>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- Event Card 3 -->
-                    <div class="col-md-4 col-sm-6 d-flex justify-content-center">
-                        <div class="card event-card">
-                            <div class="card-body">
-                                <h5 class="card-title">Tour de Antioquia</h5>
-                                <p class="card-text">Acompáñanos en el tour de Antioquia, un evento lleno de paisajes y diversión.</p>
-                                <p class="event-date">Fecha: 5 Noviembre 2024</p>
-                                <a href="#" class="btn btn-green">Ver detalles</a>
-                            </div>
-                        </div>
-                    </div>
+                    <?php include_once '../templates/postcard.php'; ?>
                 </div>
             </div>
             
@@ -176,6 +116,11 @@
             </main>
         </div>
     </div>
+    <!-- js bootstrap -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+   <!-- js leaflet   -->
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+
     <script src="../js/ajax.js"></script>
     <script src="../javascript/aprendiz.js"></script>
 </body>
